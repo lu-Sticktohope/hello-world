@@ -1,0 +1,226 @@
+创建public文件夹并在目录下创建html，css，js文件；
+同级创建index.js,server.js,route.js,url.js,requestHandle.js;
+
+创建一个登录注册页面
+
+*****************************************************************
+进入server.js
+
+引入http核心模块
+
+创建serverFunction函数并设置参数(路由函数，请求路径函数，方法函数)
+
+创建服务器，调用路径函数并传参(req,回调函数:返回一个关于请求路径的对象)
+
+定义变量params获取数据对象,定义变量pathname获取路径,
+
+调用路由函数并传参(pathname,请求方法的对象,params,回调函数:返回一个请求头和写好的数据对象)
+
+设置响应头，写入数据，发送响应
+
+设置并监听端口号，监听成功后输出'卧槽'
+
+
+导出serverFunction函数
+
+
+*****************************************************************
+进入route.js
+
+创建routeFunction函数并设置参数:
+(pathname:请求路径，handle:请求方法的对象，params:数据对象，回调函数:一个请求头和写好的数据对象)
+定义变量arr截取pathname:pathname.split('/'),得到一组字符串数组
+定义变量str 获取第一条路径名并在前面拼接一个'/';
+通过handle[str]：获取对应的值
+判断:如果对应的数值的数据类型是function，定义变量resFunction获取请求路径请求的方法;
+调用resFunction并传参(pathname:请求路径，params:数据对象，回调函数:一个请求头和写好的数据对象)
+
+导出routeFunction函数
+
+
+*****************************************************************
+进入index.js
+
+引入route.js
+引入url.js
+引入requestHandle.js
+引入server.js
+
+定义变量handle来创建对象，通过对象让请求路径和请求方法一一对应，请求方法由requestHandle.js获取过来
+
+调用server.js里的serverFunction函数并传参(路由函数,请求路径,handle)
+
+
+
+
+****************************************************************
+进入url.js
+
+引入url核心模块
+
+引入queryString核心模块
+
+创建函数urlFunction并设置参数(req,callback:回调函数,返回一个关于请求路径的对象)
+
+定义变量urlObject通过url.parse(req.url,true)获取一个网址对象
+
+req.method:获取网页请求的方式(GET/POST//);
+
+判断:如果请求方式是GET:
+定义一个变量object对象{
+    path:获取路径名，
+    params:获取请求参数
+}
+调用callback并传参(object:带有路径名和请求参数的对象)
+
+
+
+
+如果请求方式是POST:
+定义一个变量postStream赋值为空;
+
+给req通过on绑定data事件,将每次传进来的数据赋值给postStream
+
+再给req通过on绑定end事件,通过queryString.parse(postStream)方法转化数据成为对象类型
+
+定义一个变量object对象{
+    path:获取路径名，
+    params:获取请求参数
+}
+调用callback并传参(object:带有路径名和请求参数的对象)
+
+
+
+
+
+导出urlFunction函数
+
+
+*****************************************************************
+进入requestHandle.js
+
+引入fs核心模块
+
+
+{
+定义register注册函数并设置参数(pathname,params,hui:回调函数)
+
+定义变量str通过JSON.stringify(params)把数据参数转换成json数据
+
+定义一个空对象resData
+
+写一个json文件将str写入，如果写入失败:
+设置resData对象的writeHead的key值 = 响应头为html
+设置resData对象的data的key值 = 对不起，请求错误
+
+调用回调函数并传参(resData)
+
+如果写入成功:
+设置resData对象的writeHead的key值 = 响应头为json
+设置resData对象的data的key值 = str
+调用回调函数并传参(resData)
+
+}
+
+
+
+
+
+
+
+
+
+
+{
+定义login注册函数并设置参数(pathname,params,hui:回调函数);
+
+定义一个空对象resData
+
+读取json文件，如果读取失败:
+设置resData对象的writeHead的key值 = 响应头为html
+设置resData对象的data的key值 = 对不起，请求错误
+
+调用回调函数并传参(resData)
+
+如果写入成功:
+定义变量dataStr 通过data.toString('utf-8');
+
+在定义变量dataString 通过JSON.parse(dataStr);
+定义变量获取电话号，定义变量获取密码
+
+判断:如果获取到的电话号和请求上来的电话号相同&&获取到的密码和请求上来的密码相同
+定义变量json 通过JSON.stringify(dataString)转换成json对象
+设置resData对象的writeHead的key值 = 响应头为json
+设置resData对象的data的key值 = json;
+
+否则:设置resData对象的writeHead的key值 = 响应头为html
+设置resData对象的data的key值 = 404;
+
+调用回调函数并传参(resData)
+}
+
+
+
+
+{
+创建public请求网页函数并设置参数
+定义一个空对象resData
+定义变量postfix通过pathname.match(/(\.[^.]+|)$/)[0]方法取得后缀名;
+
+读取文件,如果读取失败:
+设置resData对象的writeHead的key值 = 响应头为html
+设置resData对象的data的key值 = 对不起，请求错误
+调用回调函数并传参(resData)
+
+
+如果读取成功:
+当postfix后缀是:.html
+设置resData对象的writeHead的key值 = 响应头为html
+当postfix后缀是:.css
+设置resData对象的writeHead的key值 = 响应头为css
+当postfix后缀是:.jpg
+设置resData对象的writeHead的key值 = 响应头为jpg
+当postfix后缀是:.json
+设置resData对象的writeHead的key值 = 响应头为json
+当postfix后缀是:.js
+设置resData对象的writeHead的key值 = 响应头为js
+
+设置resData对象的data的key值 = data
+
+调用回调函数并传参(resData)
+
+
+}
+
+
+
+
+
+*****************************************************************
+进入main.js
+
+点击注册按钮时:
+分别获取注册文本框的姓名，密码，电话
+创建对象params并传入姓名，密码，电话；
+
+请求http://127.0.0.1:3001/register,请求方式POST
+将对象params作为数据上传
+
+如果请求成功，弹出注册成功
+
+
+点击登录按钮时:
+分别获取登录文本框的密码，电话
+创建对象params并传入密码，电话
+
+
+请求http://127.0.0.1:3001/register,请求方式GET
+将对象params作为数据上传
+
+如果请求成功，返回数据是404，弹出'臭煞笔,你哪来的？滚回去注册';
+否则弹出登录成功，欢迎您！尊敬的'+response.name+'先生
+
+
+
+*****************************************************************
+
